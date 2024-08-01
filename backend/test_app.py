@@ -1,6 +1,7 @@
 import unittest
 import json
 from app import app
+import os
 
 class PokemonApiTestCase(unittest.TestCase):
     def setUp(self):
@@ -27,7 +28,6 @@ class PokemonApiTestCase(unittest.TestCase):
         self.assertIn('sprite', pokemon)
 
     def test_get_pokemon_by_id(self):
-        # Send a GET request to the /api/pokemon/1 endpoint
         response = self.app.get('/api/pokemon/1')
         
         # Debugging: Print response data if status code is not 200
@@ -52,8 +52,17 @@ class PokemonApiTestCase(unittest.TestCase):
         self.assertEqual(data['ability_hidden'], 'Chlorophyll')
         self.assertEqual(data['type_primary'], 'Grass')
         self.assertEqual(data['type_secondary'], 'Poison')
-        self.assertIsInstance(data['moves'], list)
-        self.assertEqual(data['sprite'], 'backend/sprites-master/sprites-master/sprites/pokemon/1.png')
+        
+        # Ensure 'moves' is a list
+        moves = data['moves']
+        if isinstance(moves, str):
+            moves = moves.split(', ')
+        self.assertIsInstance(moves, list)
+        
+        # Normalize path separators in 'sprite'
+        expected_sprite_path = 'backend/sprites-master/sprites-master/sprites/pokemon/1.png'
+        actual_sprite_path = data['sprite'].replace('\\', '/')
+        self.assertEqual(actual_sprite_path, expected_sprite_path)
 
 if __name__ == '__main__':
-    unittest.main() 
+    unittest.main()

@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS pokemon (
 
 # Function to fetch Pokémon data from the API
 def fetch_pokemon_data():
-    url = 'https://pokeapi.co/api/v2/pokemon?limit=10'
+    url = 'https://pokeapi.co/api/v2/pokemon?limit=10000'
     response = requests.get(url)
     return response.json()['results']
 
