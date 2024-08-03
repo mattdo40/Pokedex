@@ -31,3 +31,16 @@ jobs:
       run: |
         source .venv/bin/activate
         python -m unittest discover -s backend -p "test_*.py"
+
+    - name: Deploy to Heroku
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: |
+        # Install Heroku CLI
+        curl https://cli-assets.heroku.com/install.sh | sh
+        # Login to Heroku
+        echo $HEROKU_API_KEY | heroku auth:token
+        # Create a new Heroku app or use an existing one
+        heroku create my-heroku-app --buildpack heroku/python || true
+        # Push code to Heroku
+        git push heroku main
