@@ -3,8 +3,6 @@ from flask_cors import CORS  # Import CORS
 import sqlite3
 import os
 
-
-
 app = Flask(__name__, static_folder='../pokemon-frontend/dist')
 CORS(app)  # Enable CORS for all routes
 
