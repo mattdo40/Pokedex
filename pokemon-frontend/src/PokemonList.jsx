@@ -35,7 +35,7 @@ const PokemonList = () => {
               <p>Weight: {p.weight}</p>
               <p>Ability: {p.ability}</p>
               <p>Hidden Ability: {p.ability_hidden}</p>
-              <p>Type 1: {p.type}</p>
+              <p>Type 1: {p.type_primary}</p>
               {p.type_secondary && <p>Type 2: {p.type_secondary}</p>}
               <p>Moves: {p.moves}</p>
             </div>
