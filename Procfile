@@ -1,1 +1,1 @@
-web: gunicorn backend.app:app
+web: sh setup.sh && gunicorn backend.app:app
