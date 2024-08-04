@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Navigate to the frontend directory
-cd frontend
+cd pokemon-frontend
 
 # Install frontend dependencies
 npm install
