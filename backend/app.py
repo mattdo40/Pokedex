@@ -3,8 +3,14 @@ from flask_cors import CORS  # Import CORS
 import sqlite3
 import os
 
+
+
 app = Flask(__name__, static_folder='../pokemon-frontend/dist')
 CORS(app)  # Enable CORS for all routes
+
+app.config['ENV'] = os.getenv('FLASK_ENV')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
 def get_db_connection():
     conn = sqlite3.connect('pokemon.db')
