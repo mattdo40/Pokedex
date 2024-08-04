@@ -1,17 +1,10 @@
-from flask import Flask, jsonify, send_from_directory
-from flask_cors import CORS  # Import CORS
-import sqlite3
+from flask import Flask, jsonify, request, send_from_directory
 import os
+import sqlite3
+from flask_cors import CORS
 
-app = Flask(__name__, static_folder='../pokemon-frontend/dist')
+app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
-
-# Load configuration based on environment
-env = os.environ.get('FLASK_ENV', 'development')
-if env == 'production':
-    app.config.from_object('config.ProductionConfig')
-else:
-    app.config.from_object('config.DevelopmentConfig')
 
 def get_db_connection():
     conn = sqlite3.connect('pokemon.db')
@@ -20,8 +13,12 @@ def get_db_connection():
 
 @app.route('/api/pokemon', methods=['GET'])
 def get_pokemon():
+    page = int(request.args.get('page', 1))
+    limit = int(request.args.get('limit', 40))
+    offset = (page - 1) * limit
+
     conn = get_db_connection()
-    pokemon = conn.execute('SELECT * FROM pokemon').fetchall()
+    pokemon = conn.execute('SELECT * FROM pokemon LIMIT ? OFFSET ?', (limit, offset)).fetchall()
     conn.close()
     
     pokemon_list = [dict(ix) for ix in pokemon]  # Convert rows to dictionaries
