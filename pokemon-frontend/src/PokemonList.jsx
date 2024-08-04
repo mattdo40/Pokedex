@@ -29,7 +29,7 @@ const PokemonList = () => {
         {pokemon.map((p, index) => {
           return (
             <div key={index} style={boxStyle}>
-			<img src={`http://127.0.0.1:5000/sprites/${p.id}.png`} alt={p.name} />
+              <img src={`https://pokedex-app-1cc247f058c4.herokuapp.com/sprites/${p.id}.png`} alt={p.name} />
               <strong>{p.name}</strong>
               <p>Height: {p.height}</p>
               <p>Weight: {p.weight}</p>
