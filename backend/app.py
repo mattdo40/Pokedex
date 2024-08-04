@@ -1,12 +1,15 @@
 from flask import Flask, jsonify, send_from_directory
+from flask_cors import CORS  # Import CORS
+import sqlite3
 import os
 
-# Update the static_folder path to point to your frontend build directory
-app = Flask(__name__, static_folder='../pokemon-frontend/dist')
+app = Flask(__name__, static_folder='../frontend/dist')
+CORS(app)  # Enable CORS for all routes
 
 def get_db_connection():
-    # Placeholder for the actual database connection function
-    pass
+    conn = sqlite3.connect('pokemon.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.route('/api/pokemon', methods=['GET'])
 def get_pokemon():
