@@ -3,7 +3,7 @@ import os
 import sqlite3
 from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 CORS(app)  # Enable CORS for all routes
 
 def get_db_connection():
@@ -13,16 +13,10 @@ def get_db_connection():
 
 @app.route('/api/pokemon', methods=['GET'])
 def get_pokemon():
-    page = int(request.args.get('page', 1))
-    limit = int(request.args.get('limit', 40))
-    offset = (page - 1) * limit
-
     conn = get_db_connection()
-    pokemon = conn.execute('SELECT * FROM pokemon LIMIT ? OFFSET ?', (limit, offset)).fetchall()
+    pokemon = conn.execute('SELECT * FROM pokemon').fetchall()
     conn.close()
-    
-    pokemon_list = [dict(ix) for ix in pokemon]  # Convert rows to dictionaries
-    return jsonify(pokemon_list)
+    return jsonify([dict(row) for row in pokemon])
 
 @app.route('/api/pokemon/<int:id>', methods=['GET'])
 def get_pokemon_by_id(id):
@@ -30,12 +24,12 @@ def get_pokemon_by_id(id):
     pokemon = conn.execute('SELECT * FROM pokemon WHERE id = ?', (id,)).fetchone()
     conn.close()
     if pokemon is None:
-        return jsonify({'error': 'Not found'}), 404
+        return jsonify({'error': 'Pokemon not found'}), 404
     return jsonify(dict(pokemon))
 
 @app.route('/sprites/<path:filename>', methods=['GET'])
 def get_sprite(filename):
-    return send_from_directory(os.path.join(app.root_path, 'static/sprites'), filename)
+    return send_from_directory('sprites', filename)
 
 # Serve favicon.ico
 @app.route('/favicon.ico')
