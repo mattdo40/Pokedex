@@ -33,6 +33,11 @@ def get_pokemon_by_id(id):
 def get_sprite(filename):
     return send_from_directory(os.path.join(app.root_path, 'static/sprites'), filename)
 
+# Serve favicon.ico
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.static_folder, 'favicon.ico')
+
 # Serve React App
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
