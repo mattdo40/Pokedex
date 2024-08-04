@@ -5,7 +5,7 @@ const PokemonList = () => {
   const [pokemon, setPokemon] = useState([]);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:5000/api/pokemon')
+    axios.get('https://pokedex-app-1cc247f058c4.herokuapp.com/api/pokemon')
       .then(response => {
         setPokemon(response.data);
       })
