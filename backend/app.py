@@ -8,6 +8,12 @@ import os
 app = Flask(__name__, static_folder='../pokemon-frontend/dist')
 CORS(app)  # Enable CORS for all routes
 
+# Load configuration based on environment
+env = os.environ.get('FLASK_ENV', 'development')
+if env == 'production':
+    app.config.from_object('config.ProductionConfig')
+else:
+    app.config.from_object('config.DevelopmentConfig')
 
 def get_db_connection():
     conn = sqlite3.connect('pokemon.db')
