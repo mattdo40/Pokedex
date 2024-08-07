@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 
 const PokemonList = () => {
-
   const API_URL = import.meta.env.VITE_API_URL;
   const SPRITES_URL = import.meta.env.VITE_SPRITES_URL;
   const [pokemon, setPokemon] = useState([]);
@@ -10,21 +9,21 @@ const PokemonList = () => {
   const [loading, setLoading] = useState(false);
   const observer = useRef();
 
-  useEffect(() => {
-    const fetchPokemon = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${API_URL}?page=${page}&limit=40`);
-        setPokemon(prevPokemon => [...prevPokemon, ...response.data]);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPokemon();
+  const fetchPokemon = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API_URL}?page=${page}&limit=1`);
+      setPokemon(prevPokemon => [...prevPokemon, ...response.data]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [page]);
+
+  useEffect(() => {
+    fetchPokemon();
+  }, [fetchPokemon]);
 
   const lastPokemonElementRef = useRef();
   useEffect(() => {
@@ -41,8 +40,6 @@ const PokemonList = () => {
   }, [loading]);
 
   const boxStyle = {
-    border: '1px solid #ccc',
-    borderRadius: '8px',
     padding: '16px',
     margin: '8px',
     backgroundColor: '#f9f9f9',
@@ -90,5 +87,6 @@ const PokemonList = () => {
     </div>
   );
 };
+
 
 export default PokemonList;
