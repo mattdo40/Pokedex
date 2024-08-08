@@ -14,7 +14,7 @@ def get_db_connection():
 @app.route('/api/pokemon', methods=['GET'])
 def get_pokemon():
     page = request.args.get('page', 1, type=int)
-    limit = request.args.get('limit', 30, type=int)
+    limit = request.args.get('limit', 40, type=int)
     offset = (page - 1) * limit
 
     conn = get_db_connection()

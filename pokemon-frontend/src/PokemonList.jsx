@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
+import SearchBar from './SearchBar';
 
 const PokemonList = () => {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -41,52 +42,44 @@ const PokemonList = () => {
 
   const boxStyle = {
     padding: '16px',
-    margin: '8px',
-    backgroundColor: '#f9f9f9',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    color: '#333'
+    border: '1px solid #ddd',
+    margin: '16px',
+    borderRadius: '8px',
+    textAlign: 'center',
   };
 
   return (
-    <div>
-      <h1>Pokémon List</h1>
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+    <>
+      <SearchBar setPokemon={setPokemon} />
+      <div>
         {pokemon.map((p, index) => {
-          if (pokemon.length === index + 1) {
-            return (
-              <div ref={lastPokemonElementRef} key={index} style={boxStyle}>
-                <img src={`${SPRITES_URL}/${p.id}.png`} alt={p.name} />
-                <strong>{p.name}</strong>
-                <p>Height: {p.height}</p>
-                <p>Weight: {p.weight}</p>
-                <p>Ability: {p.ability}</p>
-                <p>Hidden Ability: {p.ability_hidden}</p>
-                <p>Type 1: {p.type_primary}</p>
-                {p.type_secondary && <p>Type 2: {p.type_secondary}</p>}
-                <p>Moves: {p.moves}</p>
-              </div>
-            );
-          } else {
-            return (
-              <div key={index} style={boxStyle}>
-                <img src={`${SPRITES_URL}/${p.id}.png`} alt={p.name} />
-                <strong>{p.name}</strong>
-                <p>Height: {p.height}</p>
-                <p>Weight: {p.weight}</p>
-                <p>Ability: {p.ability}</p>
-                <p>Hidden Ability: {p.ability_hidden}</p>
-                <p>Type 1: {p.type_primary}</p>
-                {p.type_secondary && <p>Type 2: {p.type_secondary}</p>}
-                <p>Moves: {p.moves}</p>
-              </div>
-            );
-          }
+          const movesArray = p.moves ? p.moves.split(',') : [];
+          return (
+            <div key={index} style={boxStyle} ref={index === pokemon.length - 1 ? lastPokemonElementRef : null}>
+              <img src={`${SPRITES_URL}/${p.id}.png`} alt={p.name} />
+              <strong>{p.name}</strong>
+              <p>ID: {p.id}</p>
+              <p>Height: {p.height}</p>
+              <p>Weight: {p.weight}</p>
+              <p>Ability: {p.ability}</p>
+              <p>Hidden Ability: {p.ability_hidden}</p>
+              <p>Type 1: {p.type_primary}</p>
+              {p.type_secondary && <p>Type 2: {p.type_secondary}</p>}
+              <label htmlFor={`moves-${p.id}`}>Moves:</label>
+              <select id={`moves-${p.id}`}>
+                {movesArray.map((move, moveIndex) => (
+                  <option key={moveIndex} value={move}>
+                    {move}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
         })}
+        {loading && <p>Loading...</p>}
       </div>
-      {loading && <p>Loading...</p>}
-    </div>
+    </>
   );
 };
-
 
 export default PokemonList;
