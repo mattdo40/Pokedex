@@ -1,14 +1,34 @@
 import unittest
 import json
+from unittest.mock import patch, MagicMock
 from app import app
-import os
 
 class PokemonApiTestCase(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
         self.app.testing = True
 
-    def test_get_pokemon(self):
+    @patch('app.get_db_connection')
+    def test_get_pokemon(self, mock_get_db_connection):
+        # Create a fake database connection and cursor
+        mock_conn = MagicMock()
+        mock_cursor = MagicMock()
+        mock_get_db_connection.return_value = mock_conn
+        mock_conn.execute.return_value.fetchall.return_value = [
+            {
+                'id': 1,
+                'name': 'Bulbasaur',
+                'height': 7,
+                'weight': 69,
+                'ability': 'Overgrow',
+                'ability_hidden': 'Chlorophyll',
+                'type_primary': 'Grass',
+                'type_secondary': 'Poison',
+                'moves': 'Tackle, Growl',
+                'sprite': 'bulbasaur.png'
+            }
+        ]
+
         response = self.app.get('/api/pokemon')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content_type, 'application/json')
@@ -27,7 +47,24 @@ class PokemonApiTestCase(unittest.TestCase):
         self.assertIn('moves', pokemon)
         self.assertIn('sprite', pokemon)
 
-    def test_get_pokemon_by_id(self):
+    @patch('app.get_db_connection')
+    def test_get_pokemon_by_id(self, mock_get_db_connection):
+        # Create a fake database connection and cursor
+        mock_conn = MagicMock()
+        mock_get_db_connection.return_value = mock_conn
+        mock_conn.execute.return_value.fetchone.return_value = {
+            'id': 1,
+            'name': 'Bulbasaur',
+            'height': 7,
+            'weight': 69,
+            'ability': 'Overgrow',
+            'ability_hidden': 'Chlorophyll',
+            'type_primary': 'Grass',
+            'type_secondary': 'Poison',
+            'moves': 'Tackle, Growl',
+            'sprite': 'bulbasaur.png'
+        }
+
         response = self.app.get('/api/pokemon/1')
         
         # Debugging: Print response data if status code is not 200
@@ -52,17 +89,14 @@ class PokemonApiTestCase(unittest.TestCase):
         self.assertEqual(data['ability_hidden'], 'Chlorophyll')
         self.assertEqual(data['type_primary'], 'Grass')
         self.assertEqual(data['type_secondary'], 'Poison')
-        
-        # Ensure 'moves' is a list
-        moves = data['moves']
-        if isinstance(moves, str):
-            moves = moves.split(', ')
-        self.assertIsInstance(moves, list)
-        
-        # Normalize path separators in 'sprite'
-        expected_sprite_path = 'backend/sprites-master/sprites-master/sprites/pokemon/1.png'
-        actual_sprite_path = data['sprite'].replace('\\', '/')
-        self.assertEqual(actual_sprite_path, expected_sprite_path)
+        self.assertEqual(data['moves'], 'Tackle, Growl')
+        self.assertEqual(data['sprite'], 'bulbasaur.png')
+
+        # Test for a non-existent Pokémon
+        mock_conn.execute.return_value.fetchone.return_value = None
+        response = self.app.get('/api/pokemon/999')
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json, {'error': 'Pokemon not found'})
 
 if __name__ == '__main__':
     unittest.main()
