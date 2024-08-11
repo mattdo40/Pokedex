@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 import SearchBar from './SearchBar';
+import './styles/tailwind.css';
 
 const PokemonList = () => {
   const API_URL = import.meta.env.VITE_API_URL;
